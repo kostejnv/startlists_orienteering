@@ -39,13 +39,13 @@ class Startlist_manager:
 
     def add_vacants(self, cats):
         for start in self.startlist.values():
-            if start["Name"] == 'Vakant':
+            if start["Name"] in ['Vakant', 'Vakant ']:
                 cats[start["ClassDesc"]].vacants_count += 1
         return cats
 
     def add_athletes(self, cats):
         for start in self.startlist.values():
-            if start["Name"] != 'Vakant':
+            if start["Name"] not in ['Vakant', 'Vakant ']:
                 cats[start["ClassDesc"]].athletes.append(Athlete(start['UserID'], start['ClubID']))
         return cats
 
