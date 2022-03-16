@@ -153,6 +153,8 @@ fabric.properties
 # scratches
 scratch.py
 scratch.ipynb
+results.pkl
+solver_arena.ipynb
 
 # data
 data/
