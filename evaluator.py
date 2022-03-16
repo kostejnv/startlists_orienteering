@@ -19,7 +19,7 @@ class Evaluator:
             event = Input_manager(event_id).get_event()
             if print_logs: print(f'Evaluation of event {event_id} begins...')
             start = time.time()
-            event.categories, schedule = self.solver.solve(event.get_not_empty_categories_with_interval_start())
+            event.categories, schedule = self.solver.solve(event)
             end = time.time()
             solver_time = end - start
             if print_logs: print(f'Evaluation of event {event_id} finished with schedule length {len(schedule)}')
