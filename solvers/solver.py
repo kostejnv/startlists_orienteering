@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 class Solver(ABC):
     @abstractmethod
-    def solve(self, categories):
+    def solve(self, event):
         pass
 
     @abstractmethod

@@ -3,12 +3,12 @@ from input_manager.startlists_manager import Startlist_manager
 
 
 class HumanSolver(Solver):
-    def __init__(self, event_ids):
-        self.event_ids = (id for id in event_ids)
+    def __init__(self):
         pass
 
-    def solve(self, categories):
-        with open(f"data/{next(self.event_ids)}/startlists.json") as f:
+    def solve(self, event):
+        categories = event.get_not_empty_categories_with_interval_start()
+        with open(f"data/{event.id}/startlists.json") as f:
             schedule = Startlist_manager(f).get_schedule(cat_filter=categories.keys())
 
         for cat_name, cat_data in categories.items():

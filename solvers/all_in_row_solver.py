@@ -5,7 +5,8 @@ class AllInRowSolver(Solver):
     def __init__(self):
         pass
 
-    def solve(self, categories):
+    def solve(self, event):
+        categories = event.get_not_empty_categories_with_interval_start()
         schedule_length = sum([(cat.get_category_count() -1) * cat.min_interval + 1 for cat in categories.values()])
         schedule = [[] for _ in range(schedule_length)]
         act_time = 0
