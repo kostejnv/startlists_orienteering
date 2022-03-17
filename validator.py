@@ -61,7 +61,7 @@ class Validator:
 
     def __validate_length(self):
         if self.schedule_length != len(self.schedule):
-            print("WARNING: schedule length is different than expected")
+            print(f"WARNING: schedule length ({self.schedule_length}) is different than expected ({len(self.schedule)})")
             return False
         return True
 
