@@ -19,7 +19,7 @@ class HumanSolver(Solver):
                 cat_data.final_interval = cat_interval
             cat_data.final_start = cat_start
 
-        return categories, schedule
+        return categories, len(schedule)
 
     def get_name(self):
         return 'HumanSolver'

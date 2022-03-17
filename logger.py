@@ -9,8 +9,8 @@ class ResultLogger:
         self.data['solver_name'] = solver_name
         self.data['date'] = pd.Timestamp.now()
 
-    def log_event(self, event, duration, schedule, was_valid):
-        self.data[f'{event.id}_length'] = len(schedule)
+    def log_event(self, event, duration, schedule_length, was_valid):
+        self.data[f'{event.id}_length'] = schedule_length
         self.data[f'{event.id}_duration'] = duration
         self.data[f'{event.id}_valid'] = was_valid
         pass

@@ -19,17 +19,24 @@ class Evaluator:
             event = Input_manager(event_id).get_event()
             if print_logs: print(f'Evaluation of event {event_id} begins...')
             start = time.time()
-            event.categories, schedule = self.solver.solve(event)
+            individual_cats, schedule_length = self.solver.solve(event)
+            event = self.__merge_solved_cats_to_event(individual_cats, event)
             end = time.time()
             solver_time = end - start
-            if print_logs: print(f'Evaluation of event {event_id} finished with schedule length {len(schedule)}')
-            if print_logs: print(f'Duration of solving was {solver_time}s')
 
-            was_valid = Validator(schedule,event).validate_schedule()
+            was_valid = Validator(event, schedule_length).validate_schedule()
             if print_logs & was_valid: print('Schedule is valid')
             if print_logs & (not was_valid): print('UNVALID')
 
-            logger.log_event(event, solver_time,schedule, was_valid)
+            if print_logs: print(f'Evaluation of event {event_id} finished with schedule length {schedule_length}')
+            if print_logs: print(f'Duration of solving was {solver_time}s')
+
+            logger.log_event(event, solver_time,schedule_length, was_valid)
 
         logger.log_solver()
         if print_logs: print('Evaluation finished')
+
+    def __merge_solved_cats_to_event(self, ind_cats, event):
+        for cat in ind_cats.values():
+            event.categories[cat.name] = cat
+        return event
