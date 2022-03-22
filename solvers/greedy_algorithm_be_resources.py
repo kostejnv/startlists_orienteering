@@ -1,3 +1,4 @@
+from categories_modificators.courses_joiner import CoursesJoiner
 from solvers.solver import Solver
 
 
@@ -20,6 +21,8 @@ class GreedyByResouresSolver(Solver):
 
     def solve(self, event):
         categories = event.get_not_empty_categories_with_interval_start()
+        cs = CoursesJoiner()
+        categories = cs.join(categories)
         interval = max([cat.min_interval for cat in categories.values()])
         # initialisation
         unused_cats = list(categories.values())
@@ -36,7 +39,7 @@ class GreedyByResouresSolver(Solver):
                 res[idx].append(cat.first_control)
             unused_cats.remove(cat)
         c_max = max([i+1 for i in range(len(res)) if res[i]])
-        return categories, c_max
+        return cs.disjoin(categories), c_max
 
     def get_name(self):
         return 'GreedyByResouresSolver'

@@ -1,3 +1,4 @@
+from categories_modificators.courses_joiner import CoursesJoiner
 from solvers.solver import Solver
 from solvers.solver_utils import set_all_intervals_to_power_2
 from math import floor
@@ -50,8 +51,11 @@ class Power2Solver(Solver):
 
     def solve(self, event):
         S = event.get_not_empty_categories_with_interval_start()
+        cs = CoursesJoiner()
+        S = cs.join(S)
         S = set_all_intervals_to_power_2(S)
-        return self.algorithm(S)
+        S, length = self.algorithm(S)
+        return cs.disjoin(S), length
 
     def algorithm(self, S):
         b1 = max([(c.get_category_count() - 1) * c.min_interval + 1 for c in S.values()])
@@ -72,7 +76,6 @@ class Power2Solver(Solver):
             for bin in bins:
                 if sum([c.get_category_count() for c in bin]) >= t / G:
                     i = CC.pop(0)
-                    # TODO: ozkouset, zda to doopravdy zmeni kategorie
                     schedule_bin(bin, G, i)
                     for c in bin:
                         unused_cats.remove(c)
