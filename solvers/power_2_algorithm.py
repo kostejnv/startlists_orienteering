@@ -1,7 +1,7 @@
 from categories_modificators.courses_joiner import CoursesJoiner
 from solvers.solver import Solver
 from solvers.solver_utils import set_all_intervals_to_power_2
-from math import floor
+from math import floor, log2
 
 
 def greedy_schedule(cats, max_bin_size):
@@ -51,18 +51,18 @@ class Power2Solver(Solver):
 
     def solve(self, event):
         S = event.get_not_empty_categories_with_interval_start()
-        cs = CoursesJoiner()
-        S = cs.join(S)
         S = set_all_intervals_to_power_2(S)
         S, length = self.algorithm(S)
-        return cs.disjoin(S), length
+        return S, length
 
     def algorithm(self, S):
         b1 = max([(c.get_category_count() - 1) * c.min_interval + 1 for c in S.values()])
         b2 = sum([c.get_category_count() for c in S.values()])
         t = max(b1, b2)
+        max_interval = max([c.min_interval for c in S.values()])
         PC = {}
-        PC[1] = []
+        for i in range(int(log2(max_interval))):
+            PC[2**i] = []
         for c in S.values():
             if c.min_interval in PC:
                 PC[c.min_interval].append(c)
