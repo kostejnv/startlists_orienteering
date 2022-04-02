@@ -8,10 +8,16 @@ class Courses_manager:
         self.courses = [line.replace('\n', '').split('\t') for line in data][1:] # parse file format
 
     def add_courses_info_to_cats(self, cats):
+        course_idx = 1
+        courses_orders = {}
         for course in self.courses:
             act_category_name = course[0]
             act_controls_order = course[-1]
             if act_category_name in cats: # check this course has category in system
+                if act_controls_order not in courses_orders: #create new course name
+                    courses_orders[act_controls_order] = str(course_idx)
+                    course_idx += 1
+                cats[act_category_name].course = courses_orders[act_controls_order] # add course to category
                 cats[act_category_name].first_control = act_controls_order.split('-')[1]
                 cats[act_category_name].categories_w_same_course = \
                     [cat[0] for cat in self.courses if (cat[-1] == act_controls_order) & (cat[0] != act_category_name)]

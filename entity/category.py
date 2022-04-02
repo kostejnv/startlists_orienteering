@@ -8,6 +8,7 @@ class Category:
         self.vacants_count = 0
         self.categories_w_same_course = []
         self.first_control = "-1"
+        self.course = None
         self.near_category = []
         self.far_category = []
         self.final_interval = None
