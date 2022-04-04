@@ -5,17 +5,16 @@ include "disjunctive.mzn";
 
 
 % data
-enum Categories = {H21,D21,H16};
+enum Categories;
 
 array[Categories] of int: idxs = 1..length(Categories); % for ordering the categories
-array[Categories] of int: gs = [2,2,3]; % minimal periods
-array[Categories] of int: ps = [30,30,10]; % number of athletes
-%array[Categories] of string: rs = ["31","31"]; % first controls of categories
-array[Categories] of string: cs = ["HE","DE","HE"]; % courses of categories
-int: capacity = 1;
+array[Categories] of int: gs; % minimal periods
+array[Categories] of int: ps; % number of athletes
+array[Categories] of string: cs; % courses of categories
+int: capacity;
 
-int: upperBoundLength = 500;
-int: lowerBoundLength = 0;
+int: upperBoundLength;
+int: lowerBoundLength;
 int: maxG = upperBoundLength div max(ps);
 
 % variables
@@ -26,7 +25,6 @@ var lowerBoundLength..upperBoundLength: cmax; %end of schedule
 %functions
 function var int: finish(var Categories: cat_idx) = (ps[cat_idx]-1) * Gs[cat_idx] + Ss[cat_idx];
 
-%function array[int] of int: all_start_times(var Categories: i) = [Ss[i] + Gs[i]*t| t in 0..ps[i]-1];
 
 % constraints
 %-----------------------------------------------
@@ -37,7 +35,7 @@ constraint cmax = max([finish(i) | i in Categories]);
 constraint forall([gs[i] <= Gs[i] | i in Categories]);
 
 % Gs posibilities based on cmax and start of category
-constraint forall([Gs[i] <= ((cmax - Ss[i]) div (ps[i] - 1)) | i in Categories]);
+constraint forall([cmax >= (ps[i]-1)*Gs[i]+Ss[i] | i in Categories]);
 
 % gap between categories with same courses
 constraint forall([ if Ss[i] > finish(j)

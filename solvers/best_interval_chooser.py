@@ -27,6 +27,8 @@ class BestIntervalChooser(Solver):
 
         categories = proc_event.get_not_empty_categories_with_interval_start()
         categories = set_all_intervals_to_power_2(categories)
+        cs = CoursesJoiner()
+        categories =  cs.join(categories)
 
         max_interval = max([cat.min_interval for cat in categories.values()])
         all_intervals = [2 ** i for i in range(int(log2(max_interval)) + 1)]
@@ -44,7 +46,7 @@ class BestIntervalChooser(Solver):
                 best_cats = self.__return_cats_back_acc_to_ratio(solved_cats, ratios)
                 min_schedule_length = schedule_length
 
-        return best_cats, min_schedule_length
+        return cs.disjoin(best_cats), min_schedule_length
 
     def get_name(self):
         return f'BestIntervalChooser with {self.solver.get_name()}'
