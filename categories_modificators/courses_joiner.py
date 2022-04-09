@@ -1,59 +1,100 @@
 from entity.category import Category
-
-def create_merge_cat(cats, index):
-    interval = max([cat.min_interval for cat in cats])
-    athletes = sum([cat.get_category_count() for cat in cats])
-    category = Category(index)
-    category.min_interval = interval
-    category.vacants_count = athletes
-    category.first_control = cats[0].first_control
-    return category
+from categories_modificators.utils import to_dict, set_all_intervals_to_power_2
+from copy import deepcopy
 
 
 class CoursesJoiner:
-    def __init__(self):
+    def __init__(self, categories_to_join: list):
         self.was_joined = False
+        self.original_cats = categories_to_join
+        self.ratios = {}
+        self.cats_of_course = {}
 
-    def join(self, categories):
-        self.was_joined = True
-        index = 0
-        self.groups_of_cats = {}
+    def join(self) -> dict:
+        cats = set_all_intervals_to_power_2(deepcopy(self.original_cats))
+        course_names = set([cat.course for cat in cats])
+        joined_cats = []
+        for course in course_names:
+            cats_w_given_course = [cat for cat in cats if cat.course == course]
+            joined_cats.append(self.__built_joined_cat_from(course, cats_w_given_course))
+        return to_dict(joined_cats)
 
-        cats_indices = {}
-        for cat in categories.values():
-            if cat.name not in cats_indices:
-                cats_indices[cat.name] = index
-                for same_course_cat in cat.categories_w_same_course:
-                    if same_course_cat in categories:
-                        cats_indices[same_course_cat] = index
-                index += 1
+    def disjoin(self, solved_joined_categories: list) -> dict:
+        solved_cats = []
+        for solved_course in solved_joined_categories:
+            solved_cats += self.__disjoin_joined_cat(solved_course)
+        self.__transfer_data_to_original_cats(solved_cats, self.original_cats)
+        return to_dict(self.original_cats)
 
-        for cat_name, index in cats_indices.items():
-            if index in self.groups_of_cats:
-                self.groups_of_cats[index].append(categories[cat_name])
+    def __built_joined_cat_from(self, course_name: str, cats_to_join: list) -> Category:
+        sorted_cats = list(sorted(cats_to_join, key=lambda cat: cat.min_interval))
+        self.__save_cats_of_courses(course_name, sorted_cats)  # remeber the cats of give courses for disjoin
+
+        joined_cat = self.__construct_initial_cat(sorted_cats[0])
+        self.__add_cats_ratios(sorted_cats)  # remember ratios between min cat and given cat interval
+        for cat in sorted_cats[1:]:
+            self.__add_cat_to_joined_cat(joined_cat, cat)
+        return joined_cat
+
+    def __disjoin_joined_cat(self, solved_course: Category) -> list:
+        rest_of_solved_course = deepcopy(solved_course)
+        cats = self.__get_cats_of_course(solved_course.name)
+        solved_cats = []
+        for idx, cat in enumerate(cats):
+            solved_cat = self.__pop_cat_from_course(rest_of_solved_course, cat, is_first=(idx == 0))
+            solved_cats.append(solved_cat)
+        return solved_cats
+
+    def __transfer_data_to_original_cats(self, new_cats: list, original_cats: list) -> None:
+        new_cats_dict = to_dict(new_cats)
+        for org_cat in original_cats:
+            if org_cat.name in new_cats_dict:
+                self.__transfer_data_to_single_original_cat(org_cat, new_cats_dict[org_cat.name])
             else:
-                self.groups_of_cats[index] = [categories[cat_name]]
+                raise f"category {org_cat.name} is not between solved_categories"
 
-        merged_categories = {}
-        for index, cats in self.groups_of_cats.items():
-            merged_categories[index] = create_merge_cat(cats, index)
-        return merged_categories
+    def __save_cats_of_courses(self, course_name: str, sorted_cats: list) -> None:
+        self.cats_of_course[course_name] = sorted_cats
 
+    def __construct_initial_cat(self, first_cat: Category) -> Category:
+        init_cat = Category(first_cat.course)
 
-    def disjoin(self, solved_merged_categories):
-        if not self.was_joined:
-            raise "at first join must be ran"
+        # add general data
+        init_cat.course = first_cat.course
+        init_cat.first_control = first_cat.first_control
+        init_cat.vacants_count = first_cat.get_category_count()  # number of athletes in first cat
+        init_cat.min_interval = first_cat.min_interval  # it is min interval of all categories of this course
+        return init_cat
 
-        final_categories = {}
-        for solved_merged_cat in solved_merged_categories.values():
-            for final_cat in self.__disjoint_cat(solved_merged_cat):
-                final_categories[final_cat.name] = final_cat
-        return final_categories
+    def __add_cats_ratios(self, sorted_cats: list) -> None:
+        min_interval = min([cat.min_interval for cat in sorted_cats])
+        for cat in sorted_cats:
+            self.ratios[cat.name] = cat.min_interval // min_interval
 
-    def __disjoint_cat(self, solved_merged_cat):
-        act_start = solved_merged_cat.final_start
-        for final_cat in self.groups_of_cats[solved_merged_cat.name]:
-            final_cat.final_interval = solved_merged_cat.final_interval
-            final_cat.final_start = act_start
-            act_start += final_cat.get_category_count() * final_cat.final_interval
-        return self.groups_of_cats[solved_merged_cat.name]
+    def __add_cat_to_joined_cat(self, joined_cat: Category, cat: Category) -> None:
+        joined_cat.vacants_count += self.ratios[cat.name] * cat.get_category_count()
+
+    def __get_cats_of_course(self, cat_name: str) -> list:
+        return self.cats_of_course[cat_name]
+
+    def __pop_cat_from_course(self, rest_of_solved_course: Category, cat_to_pop: Category, is_first: bool) -> Category:
+        '''
+        cat_to_pop is always in the begining of the rest_of_solved_courses
+        '''
+        poped_cat = deepcopy(cat_to_pop)
+
+        poped_cat.final_interval = self.ratios[poped_cat.name] * rest_of_solved_course.final_interval
+        if not is_first: #move final start one interval further
+            rest_of_solved_course.final_start += poped_cat.final_interval
+
+        poped_cat.final_start = rest_of_solved_course.final_start
+
+        # change final_start in rest_of_solved_courses
+        rest_of_solved_course.final_start += (
+                                             poped_cat.get_category_count() - 1) * poped_cat.final_interval
+
+        return poped_cat
+
+    def __transfer_data_to_single_original_cat(self, org_cat: Category, new_cat: Category) -> None:
+        org_cat.final_interval = new_cat.final_interval
+        org_cat.final_start = new_cat.final_start
