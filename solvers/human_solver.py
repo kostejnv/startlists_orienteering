@@ -22,4 +22,4 @@ class HumanSolver(Solver):
         return categories, len(schedule)
 
     def get_name(self):
-        return 'HumanSolver'
+        return 'RealStartlists'

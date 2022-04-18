@@ -10,6 +10,9 @@ class CoursesJoinerLow:
         self.ratios = {}
         self.cats_of_course = {}
 
+    def get_name(self):
+        return "-LowInt"
+
     def join(self, categories_to_join: list) -> dict:
         self.original_cats = categories_to_join
         cats = set_all_intervals_to_power_2(deepcopy(self.original_cats))

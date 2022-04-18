@@ -28,7 +28,7 @@ class Minizinc(Solver):
         return solved_categories, schedule_length
 
     def get_name(self):
-        return 'Minizinc'
+        return 'ConsProg'
 
     def __get_instance(self, event, solver):
         model = self.__generate_model(event)

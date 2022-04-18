@@ -63,4 +63,4 @@ class Power2SolverMoreCapacityWrapper(Solver):
         return self.joiner.disjoin(list(best_cats.values())), min_schedule_length
 
     def get_name(self):
-        return f'MoreCapacityWrapperFor{self.solver.get_name()}'
+        return f'{self.solver.get_name()}'

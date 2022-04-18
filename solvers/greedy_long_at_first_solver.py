@@ -31,4 +31,4 @@ class GreedyLongFirstSolver(Solver):
         return self.joiner.disjoin(list(categories.values())), c_max
 
     def get_name(self):
-        return 'GreedyLongFirstSolver'
+        return 'GreedyLength'

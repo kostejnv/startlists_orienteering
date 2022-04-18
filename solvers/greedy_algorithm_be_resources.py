@@ -42,4 +42,4 @@ class GreedyByResouresSolver(Solver):
         return self.joiner.disjoin(list(categories.values())), c_max
 
     def get_name(self):
-        return 'GreedyByResouresSolver'
+        return 'GreedyRes'

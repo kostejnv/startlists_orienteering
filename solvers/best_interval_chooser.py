@@ -49,7 +49,7 @@ class BestIntervalChooser(Solver):
         return self.joiner.disjoin(list(best_cats.values())), min_schedule_length
 
     def get_name(self):
-        return f'BestIntervalChooser with {self.solver.get_name()}'
+        return f'{self.solver.get_name()}{self.joiner.get_name()}'
 
     def __get_ratios_for_given_interval(self, interval, cats):
         '''

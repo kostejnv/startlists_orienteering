@@ -94,4 +94,4 @@ class Power2Solver(Solver):
 
 
     def get_name(self):
-        return 'Power2Solver' if not self.improved else 'Power2SolverImproved'
+        return f'Doubling{self.joiner.get_name()}-Full' if not self.improved else 'Doubling{self.joiner.get_name()}-Half'
