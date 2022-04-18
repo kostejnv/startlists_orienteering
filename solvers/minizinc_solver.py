@@ -15,13 +15,15 @@ from solvers.lower_bound_solver import LowerBoundSolver
 
 
 class Minizinc(Solver):
-    def __init__(self):
+    def __init__(self, timeout):
+        self.timeout = timeout
         pass
 
     def solve(self, event):
         gecode = MZNSolver.lookup("gecode")
         instance = self.__get_instance(event, gecode)
-        result = instance.solve(timeout=datetime.timedelta(minutes=20))
+        result = instance.solve(timeout=self.timeout)
+        #datetime.timedelta(minutes=20)
         solved_categories, schedule_length = self.__convert_result(result, event)
         return solved_categories, schedule_length
 
