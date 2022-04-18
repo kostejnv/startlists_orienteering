@@ -2,7 +2,7 @@ from solvers.solver import Solver
 from solvers.solver_utils import set_all_intervals_to_power_2
 import copy
 from math import log2, ceil
-from categories_modificators.courses_joiner import CoursesJoiner
+from categories_modificators.courses_joiner_low import CoursesJoinerLow
 
 
 class BestIntervalChooser(Solver):
@@ -13,13 +13,14 @@ class BestIntervalChooser(Solver):
     increase interval, at bigger increase number of atheletes
     '''
 
-    def __init__(self, solver):
+    def __init__(self, solver, joiner):
         '''
 
         :param solver: solver that process modificated categories
         '''
         self.solver = solver
         self.__original_vacants = {} #internal variable used in __return_cats_back_acc_to_ratio
+        self.joiner = joiner
         pass
 
     def solve(self, event):
@@ -27,8 +28,7 @@ class BestIntervalChooser(Solver):
 
         categories = proc_event.get_not_empty_categories_with_interval_start()
         categories = set_all_intervals_to_power_2(categories)
-        cs = CoursesJoiner(list(categories.values()))
-        categories =  cs.join()
+        categories =  self.joiner.join(list(categories.values()))
 
         max_interval = max([cat.min_interval for cat in categories.values()])
         all_intervals = [2 ** i for i in range(int(log2(max_interval)) + 1)]
@@ -46,7 +46,7 @@ class BestIntervalChooser(Solver):
                 best_cats = self.__return_cats_back_acc_to_ratio(solved_cats, ratios)
                 min_schedule_length = schedule_length
 
-        return cs.disjoin(list(best_cats.values())), min_schedule_length
+        return self.joiner.disjoin(list(best_cats.values())), min_schedule_length
 
     def get_name(self):
         return f'BestIntervalChooser with {self.solver.get_name()}'

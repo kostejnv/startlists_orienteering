@@ -1,7 +1,7 @@
 import copy
 
 from solvers.solver import Solver
-from categories_modificators.courses_joiner import CoursesJoiner
+from categories_modificators.courses_joiner_low import CoursesJoinerLow
 import copy
 import random
 
@@ -31,14 +31,14 @@ def partition_cats(resources_list, capacity):
 
 
 class Power2SolverMoreCapacityWrapper(Solver):
-    def __init__(self, solver):
+    def __init__(self, solver, joiner):
         self.solver = solver
+        self.joiner = joiner
 
     def solve(self, event):
         event = copy.deepcopy(event)
         categories = event.get_not_empty_categories_with_interval_start()
-        cs = CoursesJoiner(list(categories.values()))
-        categories = cs.join()
+        categories =  self.joiner.join(list(categories.values()))
 
         resources_list = group_cats_based_on_resource(categories.values())  # resoursec_list is list of lists of categories
         min_schedule_length = get_category_count_for(categories.values()) * max(
@@ -60,7 +60,7 @@ class Power2SolverMoreCapacityWrapper(Solver):
                 best_cats = {key:val for dic in solved_cats for key,val in dic.items()}
                 min_schedule_length = max_schedule_length
 
-        return cs.disjoin(list(best_cats.values())), min_schedule_length
+        return self.joiner.disjoin(list(best_cats.values())), min_schedule_length
 
     def get_name(self):
         return f'MoreCapacityWrapperFor{self.solver.get_name()}'

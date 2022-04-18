@@ -1,4 +1,4 @@
-from categories_modificators.courses_joiner import CoursesJoiner
+from categories_modificators.courses_joiner_low import CoursesJoinerLow
 from solvers.solver import Solver
 
 
@@ -16,13 +16,13 @@ def get_most_frequent_resource(cats):
 
 
 class GreedyByResouresSolver(Solver):
-    def __init__(self):
+    def __init__(self, joiner):
+        self.joiner = joiner
         pass
 
     def solve(self, event):
         categories = event.get_not_empty_categories_with_interval_start()
-        cs = CoursesJoiner(list(categories.values()))
-        categories = cs.join()
+        categories =  self.joiner.join(list(categories.values()))
         interval = max([cat.min_interval for cat in categories.values()])
         # initialisation
         unused_cats = list(categories.values())
@@ -39,7 +39,7 @@ class GreedyByResouresSolver(Solver):
                 res[idx].append(cat.first_control)
             unused_cats.remove(cat)
         c_max = max([i+1 for i in range(len(res)) if res[i]])
-        return cs.disjoin(list(categories.values())), c_max
+        return self.joiner.disjoin(list(categories.values())), c_max
 
     def get_name(self):
         return 'GreedyByResouresSolver'
