@@ -1,4 +1,4 @@
-from entity.category import Category
+from entities.category import Category
 from categories_modificators.utils import to_dict, set_all_intervals_to_power_2
 from copy import deepcopy
 
@@ -11,7 +11,7 @@ class CoursesJoinerLow:
         self.cats_of_course = {}
 
     def get_name(self):
-        return "-HighInt"
+        return "-LowInt"
 
     def join(self, categories_to_join: list) -> dict:
         self.original_cats = categories_to_join

@@ -1,5 +1,5 @@
 import json
-from entity.event import Event
+from entities.event import Event
 
 
 class Event_manager:

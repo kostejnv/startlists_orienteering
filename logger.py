@@ -1,7 +1,7 @@
 import pandas as pd
 from os.path import isfile
 
-LOG_PATH ='results.pkl'
+LOG_PATH ='results2.pkl'
 
 class ResultLogger:
     def __init__(self, solver_name):
@@ -10,7 +10,8 @@ class ResultLogger:
         self.data['date'] = pd.Timestamp.now()
 
     def log_event(self, event, duration, schedule_length, was_valid):
-        self.data[f'{event.id}_length'] = schedule_length
+        self.data[f'{event.id}'] = schedule_length
+        #self.data[f'{event.id}_length'] = schedule_length
         self.data[f'{event.id}_duration'] = duration
         self.data[f'{event.id}_valid'] = was_valid
         pass

@@ -1,5 +1,5 @@
-from entity.category import Category
-from entity.athlete import Athlete
+from entities.category import Category
+from entities.athlete import Athlete
 import json
 from datetime import *
 

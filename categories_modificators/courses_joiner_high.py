@@ -1,17 +1,16 @@
-from entity.category import Category
+from entities.category import Category
 from categories_modificators.utils import to_dict, set_all_intervals_to_power_2
 from copy import deepcopy
 
 
-class CoursesJoinerLow:
+class CoursesJoinerHigh:
     def __init__(self):
         self.was_joined = False
         self.original_cats = None
-        self.ratios = {}
         self.cats_of_course = {}
 
     def get_name(self):
-        return "-LowInt"
+        return "-HighInt"
 
     def join(self, categories_to_join: list) -> dict:
         self.original_cats = categories_to_join
@@ -32,12 +31,9 @@ class CoursesJoinerLow:
 
     def __built_joined_cat_from(self, course_name: str, cats_to_join: list) -> Category:
         self.__save_cats_of_courses(course_name, cats_to_join)  # remeber the cats of give courses for disjoin
-        first_cat = cats_to_join[0]
-        joined_cat = Category(first_cat.course)
-
-        # add general data
-        joined_cat.course = first_cat.course
-        joined_cat.first_control = first_cat.first_control
+        joined_cat = Category(course_name)
+        joined_cat.course = course_name
+        joined_cat.first_control = cats_to_join[0].first_control
         joined_cat.vacants_count = sum([cat.get_category_count() for cat in cats_to_join])
         joined_cat.min_interval = max([cat.min_interval for cat in cats_to_join])
 
@@ -63,14 +59,6 @@ class CoursesJoinerLow:
     def __save_cats_of_courses(self, course_name: str, sorted_cats: list) -> None:
         self.cats_of_course[course_name] = sorted_cats
 
-    def __add_cats_ratios(self, sorted_cats: list) -> None:
-        min_interval = min([cat.min_interval for cat in sorted_cats])
-        for cat in sorted_cats:
-            self.ratios[cat.name] = cat.min_interval // min_interval
-
-    def __add_cat_to_joined_cat(self, joined_cat: Category, cat: Category) -> None:
-        joined_cat.vacants_count += self.ratios[cat.name] * cat.get_category_count()
-
     def __get_cats_of_course(self, cat_name: str) -> list:
         return self.cats_of_course[cat_name]
 
@@ -83,7 +71,7 @@ class CoursesJoinerLow:
         poped_cat.final_start = rest_of_solved_course.final_start
 
         # change final_start in rest_of_solved_courses
-        rest_of_solved_course.final_start += rest_of_solved_course.final_start * poped_cat.get_category_count()
+        rest_of_solved_course.final_start += rest_of_solved_course.final_interval * poped_cat.get_category_count()
 
         return poped_cat
 

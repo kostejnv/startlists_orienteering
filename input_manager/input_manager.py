@@ -4,7 +4,7 @@ from input_manager.courses_manager import Courses_manager
 from input_manager.startlists_manager import Startlist_manager
 from input_manager.constraints_manager import ConstrainsManager
 from input_manager.event_manager import Event_manager
-from entity.event import Event
+from entities.event import Event
 
 
 class Input_manager:

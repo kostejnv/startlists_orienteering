@@ -1,4 +1,4 @@
-from entity.category import Category
+from entities.category import Category
 from collections import Counter
 
 

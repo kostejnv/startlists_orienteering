@@ -58,6 +58,8 @@ class Power2Solver(Solver):
         return self.joiner.disjoin(list(S.values())), length
 
     def algorithm(self, S):
+        if not S:
+            return S, 0
         b1 = max([(c.get_category_count() - 1) * c.min_interval + 1 for c in S.values()])
         b2 = sum([c.get_category_count() for c in S.values()])
         t = max(b1, b2)
@@ -94,4 +96,4 @@ class Power2Solver(Solver):
 
 
     def get_name(self):
-        return f'Doubling{self.joiner.get_name()}-Full' if not self.improved else 'Doubling{self.joiner.get_name()}-Half'
+        return f'Doubling{self.joiner.get_name()}-Full' if not self.improved else f'Doubling{self.joiner.get_name()}-Half'

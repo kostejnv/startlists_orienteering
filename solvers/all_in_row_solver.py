@@ -1,5 +1,5 @@
 from solvers.solver import Solver
-
+from categories_modificators.courses_joiner_high import CoursesJoinerHigh
 
 class AllInRowSolver(Solver):
     def __init__(self):
@@ -7,6 +7,8 @@ class AllInRowSolver(Solver):
 
     def solve(self, event):
         categories = event.get_not_empty_categories_with_interval_start()
+        cj = CoursesJoinerHigh()
+        categories = cj.join(list(categories.values()))
         max_interval = max([cat.min_interval for cat in categories.values()])
         schedule_length = sum([(cat.get_category_count() -1) * cat.min_interval + 1 for cat in categories.values()]) + (len(categories) - 1) * (max_interval-1)
         schedule = [[] for _ in range(schedule_length)]
@@ -19,7 +21,7 @@ class AllInRowSolver(Solver):
                 act_time += category.min_interval
             act_time -= category.min_interval
             act_time += max_interval
-        return categories, schedule_length
+        return cj.disjoin(list(categories.values())), schedule_length
 
     def get_name(self):
         return 'AllInRowSolver'
