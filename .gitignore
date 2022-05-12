@@ -157,4 +157,8 @@ results.pkl
 solver_arena.ipynb
 
 # data
-data/
+test_platform/data/[0-9]*
+!test_platform/data/5493
+**/startlists.json
+**/event_info.json
+**/entries.json
